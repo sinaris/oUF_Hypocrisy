@@ -4,3 +4,15 @@
 ## Title: oUF_Hypocrisy
 ## Note:
 ## RequiredDeps: oUF
+
+Core\Commands.lua
+Core\Config.lua
+Core\Constructors.lua
+Core\Functions.lua
+Core\Resources.lua
+Core\Tags.lua
+
+Plugins\oUF_Smooth.lua
+
+Units\Player.lua
+Units\Target.lua
