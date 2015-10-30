@@ -1,1 +1,6 @@
-oUF_Hypocrisy
+## Interface: 60200
+## Author: Sinaris
+## Credits: Hypocrisy
+## Title: oUF_Hypocrisy
+## Note:
+## RequiredDeps: oUF
