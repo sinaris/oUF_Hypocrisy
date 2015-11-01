@@ -152,6 +152,11 @@ local CreateStyle = function( self )
 
 	CreateBuffs( self )
 	CreateDebuffs( self )
+	
+			local cbft = self.Health:CreateFontString(nil, "OVERLAY")
+		cbft:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
+		cbft:SetFontObject(GameFontNormal)
+		self.CombatFeedbackText = cbft
 end
 
 oUF:RegisterStyle( 'hypocrisy:target', CreateStyle )

@@ -30,3 +30,19 @@ Constructors['StatusBar'] = function( Name, Parent, Texture, Color )
 
 	return StatusBar
 end
+
+Constructors['Indicators'] = function( self, Unit, Type )
+	if( Type == 'Combat' ) then
+		local Combat = self['RaisedFrame']:CreateTexture( nil, 'OVERLAY' )
+		Combat:SetSize( 20, 20 )
+		Combat:SetTexCoord( 0.58, 0.90, 0.08, 0.41 )
+
+		return Combat
+	elseif( Type == 'Resting' ) then
+		local Resting = self['RaisedFrame']:CreateTexture( nil, 'OVERLAY' )
+		Resting:SetSize( 20, 20 )
+		Resting:SetTexCoord( 0, 0.5, 0, 0.421875 )
+
+		return Resting
+	end
+end

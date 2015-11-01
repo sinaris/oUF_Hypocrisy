@@ -83,6 +83,18 @@ Config['Units'] = {
 		['Scale'] = 1,
 		['Height'] = 44,
 		['Width'] = 180,
+
+		['CastBars'] = {
+			['Enable'] = true,
+			['Fixed'] = true,
+			['Height'] = 20,
+			['Width'] = 374,
+			['Position'] = { 'CENTER', UIParent, 'CENTER', 0, -250 },
+			['TextColor'] = { 1, 1, 1, 1 },
+			['TimeColor'] = { 1, 1, 1, 1 },
+			['Icon_Enable'] = true,
+			['Icon_Size'] = 24,
+		}
 	},
 
 	['Target'] = {
@@ -90,6 +102,18 @@ Config['Units'] = {
 		['Scale'] = 1,
 		['Height'] = 40,
 		['Width'] = 180,
+
+		['CastBar'] = {
+			['Enable'] = true,
+			['Fixed'] = true,
+			['Height'] = 20,
+			['Width'] = 374,
+			['Position'] = { 'CENTER', UIParent, 'CENTER', 0, 750 },
+			['TextColor'] = { 1, 1, 1, 1 },
+			['TimeColor'] = { 1, 1, 1, 1 },
+			['Icon_Enable'] = true,
+			['Icon_Size'] = 24,
+		}
 	},
 
 	['TargetOfTarget'] = {
@@ -126,4 +150,14 @@ Config['Units'] = {
 		['Height'] = 16,
 		['Width'] = 87,
 	},
+	
+	['CastBars'] = {
+		['SafeZone'] = true,
+		['SafeZoneColor'] = { 0.8, 0.2, 0.2, 0.75 },
+		['Spark'] = true,
+
+		['ClassColor'] = false,
+		['Color'] = { 0.4, 0.6, 0.8, 1 },
+		['NoInterruptColor'] = { 1, 0, 0, 1 },
+	}
 }

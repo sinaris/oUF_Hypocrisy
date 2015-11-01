@@ -1,5 +1,5 @@
-local _, ns = ...
-local oUF = ns.oUF or oUF
+local AddOn, Plugin = ...
+local oUF = Plugin.oUF
 
 local smoothing = {}
 

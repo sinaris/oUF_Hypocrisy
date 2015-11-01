@@ -119,6 +119,42 @@ local FormatTime = function( s )
 	return format( '%.1f', s )
 end
 
+Functions['ShortenString'] = function( string, numChars, dots )
+	local bytes = string:len()
+
+	if( bytes <= numChars ) then
+		return string
+	else
+		local len, pos = 0, 1
+
+		while( pos <= bytes ) do
+			len = len + 1
+			local c = string:byte( pos )
+
+			if( c > 0 and c <= 127 ) then
+				pos = pos + 1
+			elseif( c >= 192 and c <= 223 ) then
+				pos = pos + 2
+			elseif( c >= 224 and c <= 239 ) then
+				pos = pos + 3
+			elseif( c >= 240 and c <= 247 ) then
+				pos = pos + 4
+			end
+
+			if( len == numChars ) then
+				break
+			end
+		end
+
+		if( len == numChars and pos <= bytes ) then
+			return string:sub( 1, pos - 1 ) .. ( dots and '...' or '' )
+		else
+			return string
+		end
+	end
+end
+
+
 Functions['PostUpdateHealth'] = function( Health, Unit, Min, Max )
 	if( not UnitIsConnected( Unit ) or UnitIsDead( Unit ) or UnitIsGhost( Unit ) ) then
 		if( Health['Value'] ) then
@@ -216,6 +252,72 @@ Functions['PostUpdatePower'] = function( Power, Unit, Min, Max )
 		end
 	end
 end
+
+--------------------------------------------------
+-- CastBars
+--------------------------------------------------
+Functions['UnitFrames_CastBars_CustomCastTimeText'] = function( self, Duration )
+	local Value = format( '%.1f / %.1f', self.channeling and Duration or self.max - Duration, self.max )
+
+	self['Time']:SetText( Value )
+end
+
+Functions['UnitFrames_CastBars_CustomCastDelayText'] = function( self, Duration )
+	local Value = format( '%.1f |cffaf5050%s %.1f|r', self.channeling and Duration or self.max - Duration, self.channeling and '- ' or '+', self.delay )
+
+	self['Time']:SetText( Value )
+end
+
+Functions['UnitFrames_CastBars_PostCastStart'] = function( self, Unit, Name, Rank, CastID )
+	if( Unit == 'vehicle' ) then
+		Unit = 'player'
+	end
+
+	if( Name == 'Opening' and self['Text'] ) then
+		self['Text']:SetText( 'Opening' )
+	elseif( self['Text'] ) then
+		if( Unit ~= 'player' ) then
+			self['Text']:SetText( Functions['ShortenString']( Name, 20, true ) )
+		else
+			self['Text']:SetText( Functions['ShortenString']( Name, 100, true ) )
+		end
+	end
+
+	if( self['interrupt'] and Unit ~= 'player' ) then
+		if( UnitCanAttack( 'player', Unit ) ) then
+			self:SetStatusBarColor( unpack( Config['Units']['CastBars']['NoInterruptColor'] ) )
+		else
+			self:SetStatusBarColor( unpack( Config['Units']['CastBars']['NoInterruptColor'] ) )
+		end
+	else
+		if( Config['Units']['CastBars']['ClassColor'] and ( Unit == 'player' or Unit == 'target' ) ) then
+			self:SetStatusBarColor( unpack( Config['Colors']['Class'][Config.PlayerClass] ) )
+		else
+			self:SetStatusBarColor( unpack( Config['Units']['CastBars']['Color'] ) )
+		end
+	end
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 Functions['CreateAuraTimer'] = function( self, elapsed )
 	if( self.TimeLeft ) then
