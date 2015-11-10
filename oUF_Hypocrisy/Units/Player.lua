@@ -126,6 +126,10 @@ local CreateCastBar = function( self )
 				self['Castbar']['SafeZone']:SetVertexColor( unpack( Config['Units']['CastBars']['SafeZoneColor'] ) )
 			end
 
+			self['Castbar']['Spark'] = self['Castbar']:CreateTexture( nil, 'ARTWORK' )
+			self['Castbar']['Spark']:SetSize( 15, 31 )
+			self['Castbar']['Spark']:SetBlendMode( 'ADD' )
+
 			if( Config['Units']['Player']['CastBars']['Icon_Enable'] ) then
 				self['Castbar']['Button'] = CreateFrame( 'Frame', nil, self['Castbar'] )
 				self['Castbar']['Button']:SetPoint( 'TOPRIGHT', self, 'TOPLEFT', -5, 0 )
@@ -139,7 +143,49 @@ local CreateCastBar = function( self )
 				Functions['SetInside']( self['Castbar']['Icon'], 0, 0 )
 			end
 		else
+			self['Castbar'] = Constructors['StatusBar']( self:GetName() .. '_CastBar', self, nil, { 0.4, 0.6, 0.8 } )
+			self['Castbar']:SetPoint( unpack( Config['Units']['Player']['CastBars']['Position'] ) )
+			self['Castbar']:SetSize( Config['Units']['Player']['CastBars']['Width'], Config['Units']['Player']['CastBars']['Height'] )
 
+			self['Castbar']:SetFrameStrata( 'BACKGROUND' )
+			self['Castbar']:SetFrameLevel( 3 )
+
+			Functions['ApplyBackdrop']( self['Castbar'] )
+
+			self['Castbar']['bg'] = self['Castbar']:CreateTexture( nil, 'BORDER' )
+			self['Castbar']['bg']:SetAllPoints( self['Castbar'] )
+			self['Castbar']['bg']:SetTexture( 0.15, 0.15, 0.15, 1 )
+
+			self['Castbar']['Text'] = Constructors['FontString']( self['Castbar'], 'OVERLAY', Config['Fonts']['Font'], Config['Fonts']['Size'] + 3, nil, 'CENTER', true )
+			self['Castbar']['Text']:SetPoint( 'LEFT', self['Castbar'], 'LEFT', 5, 0 )
+			self['Castbar']['Text']:SetTextColor( unpack( Config['Units']['Player']['CastBars']['TextColor'] ) )
+
+			self['Castbar']['Time'] = Constructors['FontString']( self['Castbar'], 'OVERLAY', Config['Fonts']['Font'], Config['Fonts']['Size'] + 3, nil, 'CENTER', true )
+			self['Castbar']['Time']:SetPoint( 'RIGHT', self['Castbar'], 'RIGHT', -5, 0 )
+			self['Castbar']['Time']:SetTextColor( unpack( Config['Units']['Player']['CastBars']['TimeColor'] ) )
+
+			if( Config['Units']['CastBars']['SafeZone'] ) then
+				self['Castbar']['SafeZone'] = self['Castbar']:CreateTexture( nil, 'ARTWORK' )
+				self['Castbar']['SafeZone']:SetTexture( Config['Textures']['StatusBar'] )
+				self['Castbar']['SafeZone']:SetVertexColor( unpack( Config['Units']['CastBars']['SafeZoneColor'] ) )
+			end
+
+			self['Castbar']['Spark'] = self['Castbar']:CreateTexture( nil, 'ARTWORK' )
+			self['Castbar']['Spark']:SetSize( 15, 31 )
+			self['Castbar']['Spark']:SetBlendMode( 'ADD' )
+
+			if( Config['Units']['Player']['CastBars']['Icon_Enable'] ) then
+				self['Castbar']['Button'] = CreateFrame( 'Frame', nil, self['Castbar'] )
+				self['Castbar']['Button']:SetPoint( 'RIGHT', self['Castbar'], 'LEFT', -5, 0 )
+				self['Castbar']['Button']:SetSize( Config['Units']['Player']['CastBars']['Icon_Size'], Config['Units']['Player']['CastBars']['Icon_Size'] )
+
+				Functions['ApplyBackdrop']( self['Castbar']['Button'] )
+
+				self['Castbar']['Icon'] = self['Castbar']['Button']:CreateTexture( nil, 'ARTWORK' )
+				self['Castbar']['Icon']:SetTexCoord( 0.08, 0.92, 0.08, 0.92 )
+
+				Functions['SetInside']( self['Castbar']['Icon'], 0, 0 )
+			end
 		end
 
 		self['Castbar']['CustomTimeText'] = Functions['UnitFrames_CastBars_CustomCastTimeText']
@@ -147,55 +193,28 @@ local CreateCastBar = function( self )
 		self['Castbar']['PostCastStart'] = Functions['UnitFrames_CastBars_PostCastStart']
 		self['Castbar']['PostChannelStart'] = Functions['UnitFrames_CastBars_PostCastStart']
 	end
-
-	--[[
-	self['Castbar'] = Constructors['StatusBar']( self:GetName() .. '_CastBar', self, nil, { 0.4, 0.6, 0.8 } )
-	self['Castbar']:SetPoint( 'CENTER', UIParent, 'CENTER', 0, -250 )
-	self['Castbar']:SetSize( 370, 25 )
-
-	Functions['ApplyBackdrop']( self['Castbar'] )
-
-	self['Castbar']['bg'] = self['Castbar']:CreateTexture( nil, 'BORDER' )
-	self['Castbar']['bg']:SetAllPoints( self['Castbar'] )
-	self['Castbar']['bg']:SetTexture( 0.15, 0.15, 0.15, 1 )
-
-	self['Castbar']['Text'] = Constructors['FontString']( self['Castbar'], 'OVERLAY', Config['Fonts']['Font'], Config['Fonts']['Size'] + 4, 'THINOUTLINE', 'CENTER', true )
-	self['Castbar']['Text']:SetPoint( 'LEFT', self['Castbar'], 'LEFT', 8, 0 )
-	self['Castbar']['Text']:SetTextColor( 1, 1, 1 )
-
-	self['Castbar']['Time'] = Constructors['FontString']( self['Castbar'], 'OVERLAY', Config['Fonts']['Font'], Config['Fonts']['Size'] + 4, 'THINOUTLINE', 'CENTER', true )
-	self['Castbar']['Time']:SetPoint( 'RIGHT', self['Castbar'], 'RIGHT', -5, 0 )
-	self['Castbar']['Time']:SetTextColor( 1, 1, 1 )
-
-	self['Castbar']['Button'] = CreateFrame( 'Frame', nil, self['Castbar'] )
-	self['Castbar']['Button']:SetPoint( 'BOTTOM', self['Castbar'], 'TOP', 0, 6 )
-	self['Castbar']['Button']:SetSize( 35, 35 )
-	Functions['ApplyBackdrop']( self['Castbar']['Button'] )
-
-	self['Castbar']['Icon'] = self['Castbar']['Button']:CreateTexture( nil, 'ARTWORK' )
-	self['Castbar']['Icon']:SetTexCoord( 0.08, 0.92, 0.08, 0.92 )
-	Functions['SetInside']( self['Castbar']['Icon'], 0, 0 )
-
-	self['Castbar']['SafeZone'] = self['Castbar']:CreateTexture( nil, 'ARTWORK' )
-	self['Castbar']['SafeZone']:SetTexture( Config['Textures']['StatusBar'] )
-	self['Castbar']['SafeZone']:SetVertexColor( 0.8, 0.2, 0.2, 0.75 )
-
-	self['Castbar']['Spark'] = self['Castbar']:CreateTexture( nil, 'ARTWORK' )
-	self['Castbar']['Spark']:SetSize( 15, 31 )
-	self['Castbar']['Spark']:SetBlendMode( 'ADD' )
-	]]--
 end
 
 local CreateIndicators = function( self )
 	self['Combat'] = Constructors['Indicators']( self, 'player', 'Combat' )
-	self['Combat']:SetPoint( "CENTER", self['Portrait'], "BOTTOMLEFT", 0, 0 )
+	self['Combat']:SetPoint( 'CENTER', self['Portrait'], 'BOTTOMLEFT', 0, 0 )
+
+	self['Leader'] = Constructors['Indicators']( self, 'player', 'Leader' )
+	self['Leader']:SetPoint( 'CENTER', self['Title'], 'CENTER', 0, 4 )
+
+	self['MasterLooter'] = Constructors['Indicators']( self, 'player', 'MasterLooter' )
+	self['MasterLooter']:SetPoint( 'CENTER', self['Title'], 'CENTER', -14, 5 )
 
 	self['Resting'] = Constructors['Indicators']( self, 'player', 'Resting' )
-	self['Resting']:SetPoint( "CENTER", self['Portrait'], "BOTTOMLEFT", 0, 0 )
+	self['Resting']:SetPoint( 'CENTER', self['Portrait'], 'BOTTOMLEFT', 0, 0 )
 end
 
 local CreateResources = function( self )
 	Resources[Config.PlayerClass]( self )
+end
+
+local CreateSwingTimer = function( self )
+	Constructors['SwingTimer']( self )
 end
 
 local CreateStyle = function( self )
@@ -233,6 +252,8 @@ local CreateStyle = function( self )
 
 	CreateIndicators( self )
 	CreateResources( self )
+
+	CreateSwingTimer( self )
 end
 
 oUF:RegisterStyle( 'hypocrisy:player', CreateStyle )

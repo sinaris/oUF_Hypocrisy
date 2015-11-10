@@ -10,25 +10,25 @@ oUF['Tags']['Methods']['hyp:type'] = function( Unit )
 		String = ''
 	else
 		if( CreatureType == 'Humanoid' ) then
-			String = '(H)'
+			String = ' (H)'
 		elseif( CreatureType == 'Beast' ) then
-			String = '(B)'
+			String = ' (B)'
 		elseif( CreatureType == 'Mechanical' ) then
-			String = '(M)'
+			String = ' (M)'
 		elseif( CreatureType == 'Elemental' ) then
-			String = '(E)'
+			String = ' (E)'
 		elseif( CreatureType == 'Undead' ) then
-			String = '(U)'
+			String = ' (U)'
 		elseif( CreatureType == 'Demon' ) then
-			String = '(D)'
+			String = ' (D)'
 		elseif( CreatureType == 'Dragonkin' ) then
-			String = '(Dr)'
+			String = ' (Dr)'
 		elseif( CreatureType == 'Giant' ) then
-			String = '(G)'
+			String = ' (G)'
 		elseif( CreatureType == 'Not specified' ) then
-			String = '(NA)'
+			String = ' (NA)'
 		elseif( CreatureType == 'Wild Pet' ) then
-			String = '(WP)'
+			String = ' (WP)'
 		else
 			String = CreatureType
 		end

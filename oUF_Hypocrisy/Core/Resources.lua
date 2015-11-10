@@ -9,6 +9,20 @@ local Resources = CreateFrame( 'Frame' )
 NameSpace['Resources'] = Resources
 
 --------------------------------------------------
+-- Mage
+--------------------------------------------------
+Resources['MAGE'] = function( self, Unit )
+
+end
+
+--------------------------------------------------
+-- Paladin
+--------------------------------------------------
+Resources['PALADIN'] = function( self, Unit )
+
+end
+
+--------------------------------------------------
 -- Rogue
 --------------------------------------------------
 Resources['ROGUE'] = function( self, Unit )

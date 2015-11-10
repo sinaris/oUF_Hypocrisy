@@ -44,5 +44,39 @@ Constructors['Indicators'] = function( self, Unit, Type )
 		Resting:SetTexCoord( 0, 0.5, 0, 0.421875 )
 
 		return Resting
+	elseif( Type == 'Leader' ) then
+		local Leader = self['RaisedFrame']:CreateTexture( nil, 'OVERLAY' )
+		Leader:SetSize( 12, 12 )
+
+		return Leader
+	elseif( Type == 'MasterLooter' ) then
+		local MasterLooter = self['RaisedFrame']:CreateTexture( nil, 'OVERLAY' )
+		MasterLooter:SetSize( 12, 12 )
+
+		return MasterLooter
 	end
+end
+
+Constructors['SwingTimer'] = function( self )
+	self['Swing'] = CreateFrame( 'StatusBar', self:GetName() .. '_Swing', self )
+	self['Swing']:SetStatusBarTexture( Config['Textures']['StatusBar'] )
+	self['Swing']:GetStatusBarTexture():SetHorizTile( false )
+	self['Swing']:SetStatusBarColor( 0.2, 0.7, 0.1 )
+	self['Swing']:SetPoint( 'BOTTOMLEFT', self, 'TOPLEFT', 0, 34 )
+	self['Swing']:SetHeight( 9 )
+	self['Swing']:SetWidth( self:GetWidth() )
+
+	self['Swing']['bg'] = self['Swing']:CreateTexture( nil, 'BORDER' )
+	self['Swing']['bg']:SetAllPoints( self['Swing'] )
+	self['Swing']['bg']:SetTexture( Config['Textures']['StatusBar'] )
+	self['Swing']['bg']:SetAlpha( 0.30 )
+
+	self['Swing']['Text'] = self['Swing']:CreateFontString( nil, 'OVERLAY' )
+	self['Swing']['Text']:SetPoint( 'CENTER', self['Swing'], 'CENTER', 0, 0 )
+	self['Swing']['Text']:SetFont( Config['Fonts']['Font'], Config['Fonts']['Size'] - 1 )
+	self['Swing']['Text']:SetTextColor( 1, 1, 1 )
+	self['Swing']['Text']:SetShadowOffset( 1, -1 )
+
+	self['Swing']:SetBackdrop( Config['Backdrop'] )
+	self['Swing']:SetBackdropColor( 0, 0, 0, 1 )
 end

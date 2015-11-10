@@ -7,6 +7,7 @@ Config['PlayerName'] = UnitName( 'player' )
 Config['PlayerClass'] = select( 2, UnitClass( 'player' ) )
 Config['PlayerColor'] = RAID_CLASS_COLORS[Config.PlayerClass]
 
+print(Config['PlayerClass'])
 Config['Scale'] = 1
 
 Config['Backdrop'] = {
@@ -86,14 +87,14 @@ Config['Units'] = {
 
 		['CastBars'] = {
 			['Enable'] = true,
-			['Fixed'] = true,
+			['Fixed'] = false,
 			['Height'] = 20,
 			['Width'] = 374,
 			['Position'] = { 'CENTER', UIParent, 'CENTER', 0, -250 },
 			['TextColor'] = { 1, 1, 1, 1 },
 			['TimeColor'] = { 1, 1, 1, 1 },
 			['Icon_Enable'] = true,
-			['Icon_Size'] = 24,
+			['Icon_Size'] = 20,
 		}
 	},
 
@@ -103,16 +104,16 @@ Config['Units'] = {
 		['Height'] = 40,
 		['Width'] = 180,
 
-		['CastBar'] = {
+		['CastBars'] = {
 			['Enable'] = true,
-			['Fixed'] = true,
+			['Fixed'] = false,
 			['Height'] = 20,
-			['Width'] = 374,
-			['Position'] = { 'CENTER', UIParent, 'CENTER', 0, 750 },
+			['Width'] = 200,
+			['Position'] = { 'CENTER', UIParent, 'CENTER', 0, 250 },
 			['TextColor'] = { 1, 1, 1, 1 },
 			['TimeColor'] = { 1, 1, 1, 1 },
 			['Icon_Enable'] = true,
-			['Icon_Size'] = 24,
+			['Icon_Size'] = 20,
 		}
 	},
 

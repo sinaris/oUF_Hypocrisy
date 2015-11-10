@@ -279,7 +279,7 @@ Functions['UnitFrames_CastBars_PostCastStart'] = function( self, Unit, Name, Ran
 		if( Unit ~= 'player' ) then
 			self['Text']:SetText( Functions['ShortenString']( Name, 20, true ) )
 		else
-			self['Text']:SetText( Functions['ShortenString']( Name, 100, true ) )
+			self['Text']:SetText( Functions['ShortenString']( Name, 20, true ) )
 		end
 	end
 
@@ -372,6 +372,12 @@ Functions['PostCreateAura'] = function( element, button )
 	button['count']:SetJustifyH( 'RIGHT' )
 	button['count']:SetFont( Config['Fonts']['Font'], Config['Fonts']['Size'], 'THINOUTLINE' )
 	button['count']:SetTextColor( 0.8, 0.8, 0.7 )
+
+	button['OverlayFrame'] = CreateFrame( 'Frame', nil, button, nil )
+	button['OverlayFrame']:SetFrameLevel( button['cd']:GetFrameLevel() + 1 )
+	button['overlay']:SetParent( button['OverlayFrame'] )
+	button['count']:SetParent( button['OverlayFrame'] )
+	button['Remaining']:SetParent( button['OverlayFrame'] )
 
 	button['Animation'] = button:CreateAnimationGroup()
 	button['Animation']:SetLooping( 'BOUNCE' )

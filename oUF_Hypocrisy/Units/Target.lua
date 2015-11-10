@@ -4,7 +4,7 @@ local oUF = NameSpace['oUF'] or oUF
 local Config = NameSpace['Config']
 local Functions = NameSpace['Functions']
 local Constructors = NameSpace['Constructors']
-local Resource = NameSpace['Resource']
+local Resources = NameSpace['Resources']
 
 if( not Config['Units']['Target']['Enable'] ) then
 	return
@@ -96,15 +96,102 @@ local CreateName = function( self )
 	self:Tag( self['Name'], '[name]' )
 end
 
-local CreateBuffs = function( self )
-	self['Buffs'] = CreateFrame( "Frame", self:GetName() .. '_Buffs', self )
-	self['Buffs']:SetPoint( "TOPLEFT", self, "BOTTOMLEFT", 0, -5 )
-	self['Buffs']['initialAnchor'] = "TOPLEFT"
-	self['Buffs']["growth-y"] = "DOWN"
+local CreateCastBar = function( self )
+	if( Config['Units']['Target']['CastBars']['Enable'] ) then
+		if( Config['Units']['Target']['CastBars']['Fixed'] ) then
+			self['Castbar'] = Constructors['StatusBar']( self:GetName() .. '_CastBar', self, nil, { 0.4, 0.6, 0.8 } )
+			self['Castbar']:SetPoint( 'LEFT', self:GetName() .. '_TitleBar', 'LEFT', 0, 0 )
+			self['Castbar']:SetSize( self['Title']:GetWidth(), self['Title']:GetHeight() )
 
-	self['Buffs']['size'] = 18
+			self['Castbar']:SetFrameStrata( 'BACKGROUND' )
+			self['Castbar']:SetFrameLevel( 3 )
+
+			Functions['ApplyBackdrop']( self['Castbar'] )
+
+			self['Castbar']['bg'] = self['Castbar']:CreateTexture( nil, 'BORDER' )
+			self['Castbar']['bg']:SetAllPoints( self['Castbar'] )
+			self['Castbar']['bg']:SetTexture( 0.15, 0.15, 0.15, 1 )
+
+			self['Castbar']['Text'] = Constructors['FontString']( self['Castbar'], 'OVERLAY', Config['Fonts']['Font'], Config['Fonts']['Size'], nil, 'CENTER', true )
+			self['Castbar']['Text']:SetPoint( 'LEFT', self['Castbar'], 'LEFT', 3, 0 )
+			self['Castbar']['Text']:SetTextColor( unpack( Config['Units']['Target']['CastBars']['TextColor'] ) )
+
+			self['Castbar']['Time'] = Constructors['FontString']( self['Castbar'], 'OVERLAY', Config['Fonts']['Font'], Config['Fonts']['Size'], nil, 'CENTER', true )
+			self['Castbar']['Time']:SetPoint( 'RIGHT', self['Castbar'], 'RIGHT', -3, 0 )
+			self['Castbar']['Time']:SetTextColor( unpack( Config['Units']['Target']['CastBars']['TimeColor'] ) )
+
+			self['Castbar']['Spark'] = self['Castbar']:CreateTexture( nil, 'ARTWORK' )
+			self['Castbar']['Spark']:SetSize( 15, 31 )
+			self['Castbar']['Spark']:SetBlendMode( 'ADD' )
+
+			if( Config['Units']['Target']['CastBars']['Icon_Enable'] ) then
+				self['Castbar']['Button'] = CreateFrame( 'Frame', nil, self['Castbar'] )
+				self['Castbar']['Button']:SetPoint( 'TOPLEFT', self, 'TOPRIGHT', 5, 0 )
+				self['Castbar']['Button']:SetSize( 35, 35 )
+
+				Functions['ApplyBackdrop']( self['Castbar']['Button'] )
+
+				self['Castbar']['Icon'] = self['Castbar']['Button']:CreateTexture( nil, 'ARTWORK' )
+				self['Castbar']['Icon']:SetTexCoord( 0.08, 0.92, 0.08, 0.92 )
+
+				Functions['SetInside']( self['Castbar']['Icon'], 0, 0 )
+			end
+		else
+			self['Castbar'] = Constructors['StatusBar']( self:GetName() .. '_CastBar', self, nil, { 0.4, 0.6, 0.8 } )
+			self['Castbar']:SetPoint( unpack( Config['Units']['Target']['CastBars']['Position'] ) )
+			self['Castbar']:SetSize( Config['Units']['Target']['CastBars']['Width'], Config['Units']['Target']['CastBars']['Height'] )
+
+			self['Castbar']:SetFrameStrata( 'BACKGROUND' )
+			self['Castbar']:SetFrameLevel( 3 )
+
+			Functions['ApplyBackdrop']( self['Castbar'] )
+
+			self['Castbar']['bg'] = self['Castbar']:CreateTexture( nil, 'BORDER' )
+			self['Castbar']['bg']:SetAllPoints( self['Castbar'] )
+			self['Castbar']['bg']:SetTexture( 0.15, 0.15, 0.15, 1 )
+
+			self['Castbar']['Text'] = Constructors['FontString']( self['Castbar'], 'OVERLAY', Config['Fonts']['Font'], Config['Fonts']['Size'] + 3, nil, 'CENTER', true )
+			self['Castbar']['Text']:SetPoint( 'LEFT', self['Castbar'], 'LEFT', 5, 0 )
+			self['Castbar']['Text']:SetTextColor( unpack( Config['Units']['Target']['CastBars']['TextColor'] ) )
+
+			self['Castbar']['Time'] = Constructors['FontString']( self['Castbar'], 'OVERLAY', Config['Fonts']['Font'], Config['Fonts']['Size'] + 3, nil, 'CENTER', true )
+			self['Castbar']['Time']:SetPoint( 'RIGHT', self['Castbar'], 'RIGHT', -5, 0 )
+			self['Castbar']['Time']:SetTextColor( unpack( Config['Units']['Target']['CastBars']['TimeColor'] ) )
+
+			self['Castbar']['Spark'] = self['Castbar']:CreateTexture( nil, 'ARTWORK' )
+			self['Castbar']['Spark']:SetSize( 15, 31 )
+			self['Castbar']['Spark']:SetBlendMode( 'ADD' )
+
+			if( Config['Units']['Target']['CastBars']['Icon_Enable'] ) then
+				self['Castbar']['Button'] = CreateFrame( 'Frame', nil, self['Castbar'] )
+				self['Castbar']['Button']:SetPoint( 'RIGHT', self['Castbar'], 'LEFT', -5, 0 )
+				self['Castbar']['Button']:SetSize( Config['Units']['Target']['CastBars']['Icon_Size'], Config['Units']['Target']['CastBars']['Icon_Size'] )
+
+				Functions['ApplyBackdrop']( self['Castbar']['Button'] )
+
+				self['Castbar']['Icon'] = self['Castbar']['Button']:CreateTexture( nil, 'ARTWORK' )
+				self['Castbar']['Icon']:SetTexCoord( 0.08, 0.92, 0.08, 0.92 )
+
+				Functions['SetInside']( self['Castbar']['Icon'], 0, 0 )
+			end
+		end
+
+		self['Castbar']['CustomTimeText'] = Functions['UnitFrames_CastBars_CustomCastTimeText']
+		self['Castbar']['CustomDelayText'] = Functions['UnitFrames_CastBars_CustomCastDelayText']
+		self['Castbar']['PostCastStart'] = Functions['UnitFrames_CastBars_PostCastStart']
+		self['Castbar']['PostChannelStart'] = Functions['UnitFrames_CastBars_PostCastStart']
+	end
+end
+
+local CreateBuffs = function( self )
+	self['Buffs'] = CreateFrame( 'Frame', self:GetName() .. '_Buffs', self )
+	self['Buffs']:SetPoint( 'TOPLEFT', self, 'BOTTOMLEFT', 0, -5 )
 	self['Buffs']:SetHeight( 18.5 )
 	self['Buffs']:SetWidth( 185 )
+
+	self['Buffs']['initialAnchor'] = 'TOPLEFT'
+	self['Buffs']['growth-y'] = 'DOWN'
+	self['Buffs']['size'] = 18
 	self['Buffs']['num'] = 36
 	self['Buffs']['spacing'] = 5
 
@@ -113,18 +200,25 @@ local CreateBuffs = function( self )
 end
 
 local CreateDebuffs = function( self )
-	self['Debuffs'] = CreateFrame( "Frame", self:GetName() .. '_Debuffs', self )
-	self['Debuffs']['size'] = 26
+	self['Debuffs'] = CreateFrame( 'Frame', self:GetName() .. '_Debuffs', self )
+	self['Debuffs']:SetPoint( 'BOTTOMLEFT', self, 'TOPLEFT', 0, 5 )
 	self['Debuffs']:SetHeight( 29 )
 	self['Debuffs']:SetWidth( 232 )
-	self['Debuffs']:SetPoint( "BOTTOMLEFT", self, "TOPLEFT", 0, 5 )
-	self['Debuffs']['initialAnchor'] = "BOTTOMLEFT"
-	self['Debuffs']["growth-y"] = "TOP"
+
+	self['Debuffs']['size'] = 26
+	self['Debuffs']['initialAnchor'] = 'BOTTOMLEFT'
+	self['Debuffs']['growth-y'] = 'TOP'
 	self['Debuffs']['num'] = 6
 	self['Debuffs']['spacing'] = 5
 
 	self['Debuffs']['PostCreateIcon'] = Functions['PostCreateAura']
 	self['Debuffs']['PostUpdateIcon'] = Functions['PostUpdateAura']
+end
+
+local CreateCombatFeedback = function( self )
+	self['CombatFeedbackText'] = self['Health']:CreateFontString( nil, 'OVERLAY' )
+	self['CombatFeedbackText']:SetPoint( 'CENTER', self['Health'], 'CENTER', 0, 0 )
+	self['CombatFeedbackText']:SetFontObject( GameFontNormal )
 end
 
 local CreateStyle = function( self )
@@ -149,14 +243,12 @@ local CreateStyle = function( self )
 	CreatePortrait( self )
 	CreateLevel( self )
 	CreateName( self )
+	CreateCastBar( self )
 
 	CreateBuffs( self )
 	CreateDebuffs( self )
-	
-			local cbft = self.Health:CreateFontString(nil, "OVERLAY")
-		cbft:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
-		cbft:SetFontObject(GameFontNormal)
-		self.CombatFeedbackText = cbft
+
+	CreateCombatFeedback( self )
 end
 
 oUF:RegisterStyle( 'hypocrisy:target', CreateStyle )
