@@ -7,7 +7,6 @@ Config['PlayerName'] = UnitName( 'player' )
 Config['PlayerClass'] = select( 2, UnitClass( 'player' ) )
 Config['PlayerColor'] = RAID_CLASS_COLORS[Config.PlayerClass]
 
-print(Config['PlayerClass'])
 Config['Scale'] = 1
 
 Config['Backdrop'] = {
