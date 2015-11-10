@@ -9,6 +9,27 @@ local Resources = CreateFrame( 'Frame' )
 NameSpace['Resources'] = Resources
 
 --------------------------------------------------
+-- Death Knight
+--------------------------------------------------
+Resources['DEATHKNIGHT'] = function( self, Unit )
+
+end
+
+--------------------------------------------------
+-- Druid
+--------------------------------------------------
+Resources['DRUID'] = function( self, Unit )
+
+end
+
+--------------------------------------------------
+-- Hunter
+--------------------------------------------------
+Resources['HUNTER'] = function( self, Unit )
+
+end
+
+--------------------------------------------------
 -- Mage
 --------------------------------------------------
 Resources['MAGE'] = function( self, Unit )
@@ -16,9 +37,23 @@ Resources['MAGE'] = function( self, Unit )
 end
 
 --------------------------------------------------
+-- Monk
+--------------------------------------------------
+Resources['MONK'] = function( self, Unit )
+
+end
+
+--------------------------------------------------
 -- Paladin
 --------------------------------------------------
 Resources['PALADIN'] = function( self, Unit )
+
+end
+
+--------------------------------------------------
+-- Priest
+--------------------------------------------------
+Resources['PRIEST'] = function( self, Unit )
 
 end
 
@@ -84,4 +119,25 @@ Resources['ROGUE'] = function( self, Unit )
 
 	self['ComboPointsBar'] = ComboPointsBar
 	self['AnticipationBar'] = AnticipationBar
+end
+
+--------------------------------------------------
+-- Shaman
+--------------------------------------------------
+Resources['SHAMAN'] = function( self, Unit )
+
+end
+
+--------------------------------------------------
+-- Warrior
+--------------------------------------------------
+Resources['WARRIOR'] = function( self, Unit )
+
+end
+
+--------------------------------------------------
+-- Warlock
+--------------------------------------------------
+Resources['WARLOCK'] = function( self, Unit )
+
 end
