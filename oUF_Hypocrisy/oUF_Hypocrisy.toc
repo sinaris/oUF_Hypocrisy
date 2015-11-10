@@ -15,7 +15,6 @@ Core\Tags.lua
 
 Plugins\oUF_AnticipationBar.lua
 Plugins\oUF_ArcaneCharge.lua
-##Plugins\oUF_Auras.lua
 Plugins\oUF_AuraWatch.lua
 Plugins\oUF_BanditsGuileBar.lua
 Plugins\oUF_ClassIcons.lua
@@ -31,8 +30,8 @@ Plugins\oUF_Reputation.lua
 Plugins\oUF_SerendipityBar.lua
 Plugins\oUF_ShadowOrbsBar.lua
 Plugins\oUF_Smooth.lua
+Plugins\oUF_SVengeance.lua
 Plugins\oUF_Swing.lua
-##Plugins\oUF_TankAuras.lua
 Plugins\oUF_TotemBar.lua
 Plugins\oUF_Trinkets.lua
 Plugins\oUF_WarlockSpecBars.lua
