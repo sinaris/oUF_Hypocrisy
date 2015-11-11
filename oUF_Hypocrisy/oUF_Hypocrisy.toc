@@ -12,6 +12,7 @@ Core\Constructors.lua
 Core\Functions.lua
 Core\Resources.lua
 Core\Tags.lua
+Core\UnitFrames.lua
 
 Plugins\oUF_AnticipationBar.lua
 Plugins\oUF_ArcaneCharge.lua
@@ -40,3 +41,8 @@ Plugins\oUF_WildMushroom.lua
 
 Units\Player.lua
 Units\Target.lua
+Units\TargetOfTarget.lua
+Units\Pet.lua
+Units\PetTarget.lua
+Units\Focus.lua
+Units\FocusTarget.lua

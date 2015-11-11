@@ -2,6 +2,7 @@ local AddOn, NameSpace = ...
 local oUF = NameSpace['oUF'] or oUF
 
 local Config = NameSpace['Config']
+local Functions = NameSpace['Functions']
 
 local Constructors = CreateFrame( 'Frame' )
 NameSpace['Constructors'] = Constructors

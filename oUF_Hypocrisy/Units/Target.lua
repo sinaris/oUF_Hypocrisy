@@ -249,6 +249,14 @@ local CreateStyle = function( self )
 	CreateDebuffs( self )
 
 	CreateCombatFeedback( self )
+
+	if( Config['PlayerClass'] == 'PRIEST' ) then
+		local WeakenedSoul = Constructors['StatusBar']( self:GetName() .. '_WeakendSoulBar', self['Power'], nil, { 0.75, 0.04, 0.04 } )
+		WeakenedSoul:SetAllPoints( self['Power'] )
+		WeakenedSoul:SetFrameLevel( self['Power']:GetFrameLevel() )
+
+		self['WeakenedSoul'] = WeakenedSoul
+	end
 end
 
 oUF:RegisterStyle( 'hypocrisy:target', CreateStyle )
