@@ -85,13 +85,13 @@ local UpdateRune = function(self, event, rid)
 	local rune = runes[runemap[rid]]
 	if(not rune) then return end
 
-	if(UnitHasVehicleUI'player') then
-		return rune:Hide()
-	else
-		rune:Show()
+	local start, duration, runeReady = GetRuneCooldown(rid)
+	-- fix by p3lim
+	if(not start) then
+		-- As of 6.2.0 GetRuneCooldown returns nil values when zoning
+		return
 	end
 
-	local start, duration, runeReady = GetRuneCooldown(rid)
 	if(runeReady) then
 		rune:SetMinMaxValues(0, 1)
 		rune:SetValue(1)

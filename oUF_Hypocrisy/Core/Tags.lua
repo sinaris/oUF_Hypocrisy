@@ -1,7 +1,37 @@
 local AddOn, NameSpace = ...
 local oUF = NameSpace['oUF'] or oUF
 
-oUF['Tags']['Events']['hyp:type'] = 'UNIT_LEVEL PLAYER_LEVEL_UP'
+local Functions = NameSpace['Functions']
+
+oUF['Tags']['Events']['hyp:level'] = 'UNIT_LEVEL PLAYER_LEVEL_UP'
+oUF['Tags']['Methods']['hyp:level'] = function( unit )
+	local String = ''
+
+	local Level = UnitLevel( unit )
+	local Classification = UnitClassification( unit )
+	local CreatureType = UnitCreatureType( unit )
+	local DifficultyColor = GetQuestDifficultyColor( Level )
+
+	if( Classification == "worldboss" ) then
+		String = "|cffff0000" .. Level .. "|rb"
+	elseif( Classification == "rareelite" ) then
+		String = Hex( DifficultyColor.r, DifficultyColor.g, DifficultyColor.b ) .. Level .. 'r+'
+	elseif( Classification == "elite" ) then
+		String = Hex( DifficultyColor.r, DifficultyColor.g, DifficultyColor.b ) .. Level .. '+'
+	elseif( Classification == "rare" ) then
+		String = Hex( DifficultyColor.r, DifficultyColor.g, DifficultyColor.b ) .. Level .. 'r'
+	else
+		if( UnitIsConnected( unit ) == nil ) then
+			String = Hex( DifficultyColor.r, DifficultyColor.g, DifficultyColor.b ) .. "??|r"
+		else
+			String = Hex( DifficultyColor.r, DifficultyColor.g, DifficultyColor.b ) .. Level .. "|r"
+		end
+	end
+
+	return String
+end
+
+oUF['Tags']['Events']['hyp:type'] = 'PLAYER_TARGET_CHANGED'
 oUF['Tags']['Methods']['hyp:type'] = function( Unit )
 	local String = ''
 	local CreatureType = UnitCreatureType( Unit )
@@ -37,36 +67,26 @@ oUF['Tags']['Methods']['hyp:type'] = function( Unit )
 	return String
 end
 
-oUF['Tags']['Events']['difficultycolor'] = 'UNIT_LEVEL PLAYER_LEVEL_UP'
-oUF['Tags']['Methods']['difficultycolor'] = function( unit )
-	local R, G, B = 0.55, 0.57, 0.61
-	local Level
+oUF['Tags']['Events']['name:veryshort'] = 'UNIT_NAME_UPDATE'
+oUF['Tags']['Methods']['name:veryshort'] = function(unit)
+	local name = UnitName(unit)
+	return name ~= nil and Functions['ShortenString'](name, 5, true) or ''
+end
 
-	if( UnitIsWildBattlePet( unit ) or UnitIsBattlePetCompanion( unit ) ) then
-		Level = UnitBattlePetLevel( unit )
+oUF['Tags']['Events']['name:short'] = 'UNIT_NAME_UPDATE'
+oUF['Tags']['Methods']['name:short'] = function(unit)
+	local name = UnitName(unit)
+	return name ~= nil and Functions['ShortenString'](name, 10, true) or ''
+end
 
-		local GetPetTeamAverageLevel = C_PetJournal.GetPetTeamAverageLevel()
-		if( GetPetTeamAverageLevel < Level or GetPetTeamAverageLevel > Level ) then
-			local DifficultyColor = GetRelativeDifficultyColor( GetPetTeamAverageLevel, Level )
-			R, G, B = DifficultyColor['r'], DifficultyColor['g'], DifficultyColor['b']
-		else
-			local QuestDifficultyColors = QuestDifficultyColors['difficult']
-			R, G, B = QuestDifficultyColors['r'], QuestDifficultyColors['g'], QuestDifficultyColors['b']
-		end
-	else
-		local DiffColor = UnitLevel( unit ) - UnitLevel( 'player' )
-		if( DiffColor >= 5 ) then
-			R, G, B = 0.69, 0.31, 0.31
-		elseif( DiffColor >= 3 ) then
-			R, G, B = 0.71, 0.43, 0.27
-		elseif( DiffColor >= -2 ) then
-			R, G, B = 0.84, 0.75, 0.65
-		elseif( -DiffColor <= GetQuestGreenRange() ) then
-			R, G, B = 0.33, 0.59, 0.33
-		else
-			R, G, B = 0.55, 0.57, 0.61
-		end
-	end
+oUF['Tags']['Events']['name:medium'] = 'UNIT_NAME_UPDATE'
+oUF['Tags']['Methods']['name:medium'] = function(unit)
+	local name = UnitName(unit)
+	return name ~= nil and Functions['ShortenString'](name, 15, true) or ''
+end
 
-	return Hex( R, G, B )
+oUF['Tags']['Events']['name:long'] = 'UNIT_NAME_UPDATE'
+oUF['Tags']['Methods']['name:long'] = function(unit)
+	local name = UnitName(unit)
+	return name ~= nil and Functions['ShortenString'](name, 20, true) or ''
 end

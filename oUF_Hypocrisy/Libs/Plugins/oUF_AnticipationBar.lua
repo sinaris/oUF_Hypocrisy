@@ -100,7 +100,7 @@ local Enable = function( self, unit )
 
 		for i = 1, 5 do
 			if( not AnticipationBar[i]:GetStatusBarTexture() ) then
-				AnticipationBar[i]:SetStatusBarTexture([=[Interface\TargetingFrame\UI-StatusBar]=])
+				AnticipationBar[i]:SetStatusBarTexture( [=[Interface\TargetingFrame\UI-StatusBar]=] )
 			end
 
 			AnticipationBar[i]:SetFrameLevel( AnticipationBar:GetFrameLevel() + 1 )

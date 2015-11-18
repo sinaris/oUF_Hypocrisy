@@ -2,122 +2,13 @@ local AddOn, NameSpace = ...
 local oUF = NameSpace['oUF'] or oUF
 
 local Config = NameSpace['Config']
-local Constructors = NameSpace['Constructors']
 
 local Functions = CreateFrame( 'Frame' )
 NameSpace['Functions'] = Functions
 
-local format = string.format
-
-local floor = math.floor
-local modf = math.modf
 local ceil = math.ceil
-
-Functions['Kill'] = function( Object )
-	if( Object.IsProtected ) then
-		if( Object:IsProtected() ) then
-			error( 'Attempted to kill a protected object: <' .. Object:GetName() .. '>' )
-		end
-	end
-
-	if( Object.UnregisterAllEvents ) then
-		Object:UnregisterAllEvents()
-	end
-
-	Object.Show = function() end
-	Object:Hide()
-end
-
-Functions['StripTextures'] = function( Object, Kill, Text )
-	for i = 1, Object:GetNumRegions() do
-		local Region = select( i, Object:GetRegions() )
-
-		if( Region:GetObjectType() == 'Texture' ) then
-			if( Kill ) then
-				Functions['Kill']( Region )
-			else
-				Region:SetTexture( nil )
-			end
-		end
-	end
-end
-
-Functions['SetInside'] = function( Object, Anchor, xOffset, yOffset )
-	xOffset = xOffset or 2
-	yOffset = yOffset or 2
-	Anchor = Anchor or Object:GetParent()
-
-	if( Object:GetPoint() ) then
-		Object:ClearAllPoints()
-	end
-
-	Object:SetPoint( 'TOPLEFT', Anchor, 'TOPLEFT', xOffset, -yOffset )
-	Object:SetPoint( 'BOTTOMRIGHT', Anchor, 'BOTTOMRIGHT', -xOffset, yOffset )
-end
-
-Functions['SetOutside'] = function( Object, Anchor, xOffset, yOffset )
-	xOffset = xOffset or 2
-	yOffset = yOffset or 2
-	Anchor = Anchor or Object:GetParent()
-
-	if( Object:GetPoint() ) then
-		Object:ClearAllPoints()
-	end
-
-	Object:SetPoint( 'TOPLEFT', Anchor, 'TOPLEFT', -xOffset, yOffset )
-	Object:SetPoint( 'BOTTOMRIGHT', Anchor, 'BOTTOMRIGHT', xOffset, -yOffset )
-end
-
-Functions['ApplyBackdrop'] = function( Parent )
-	if( not Parent ) then
-		return
-	end
-
-	Parent:SetBackdrop( Config['Backdrop'] )
-	Parent:SetBackdropColor( 0, 0, 0, 1 )
-end
-
-Functions['ColorGradient'] = function( a, b, ... )
-	local Percent
-
-	if( b == 0 ) then
-		Percent = 0
-	else
-		Percent = a / b
-	end
-
-	if( Percent >= 1 ) then
-		local R, G, B = select( select( '#', ... ) - 2, ... )
-
-		return R, G, B
-	elseif( Percent <= 0 ) then
-		local R, G, B = ...
-
-		return R, G, B
-	end
-
-	local Num = ( select( '#', ... ) / 3 )
-	local Segment, RelPercent = modf( Percent * ( Num - 1 ) )
-	local R1, G1, B1, R2, G2, B2 = select( ( Segment * 3 ) + 1, ... )
-
-	return R1 + ( R2 - R1 ) * RelPercent, G1 + ( G2 - G1 ) * RelPercent, B1 + ( B2 - B1 ) * RelPercent
-end
-
-local FormatTime = function( s )
-	local Day, Hour, Minute = 86400, 3600, 60
-
-	if( s >= Day ) then
-		return format( '%dd', ceil( s / Day ) )
-	elseif( s >= Hour ) then
-		return format( '%dh', ceil( s / Hour ) )
-	elseif( s >= Minute ) then
-		return format( '%dm', ceil( s / Minute ) )
-	elseif( s >= Minute / 12 ) then
-		return floor( s )
-	end
-
-	return format( '%.1f', s )
-end
+local floor = math.floor
+local format = string.format
 
 Functions['ShortenString'] = function( string, numChars, dots )
 	local bytes = string:len()
@@ -154,10 +45,127 @@ Functions['ShortenString'] = function( string, numChars, dots )
 	end
 end
 
+Functions['FormatTime'] = function( s )
+	local Day, Hour, Minute = 86400, 3600, 60
 
+	if( s >= Day ) then
+		return format( '%dd', ceil( s / Day ) )
+	elseif( s >= Hour ) then
+		return format( '%dh', ceil( s / Hour ) )
+	elseif( s >= Minute ) then
+		return format( '%dm', ceil( s / Minute ) )
+	elseif( s >= Minute / 12 ) then
+		return floor( s )
+	end
 
+	return format( '%.1f', s )
+end
 
+Functions['ApplyBackdrop'] = function( self )
+	if( not self ) then
+		return
+	end
 
+	self:SetBackdrop( Config['Backdrop'] )
+	self:SetBackdropColor( 0, 0, 0, 1 )
+end
+
+Functions['SetInside'] = function( Object, Anchor, xOffset, yOffset )
+	xOffset = xOffset or 2
+	yOffset = yOffset or 2
+	Anchor = Anchor or Object:GetParent()
+
+	if( Object:GetPoint() ) then
+		Object:ClearAllPoints()
+	end
+
+	Object:SetPoint( 'TOPLEFT', Anchor, 'TOPLEFT', xOffset, -yOffset )
+	Object:SetPoint( 'BOTTOMRIGHT', Anchor, 'BOTTOMRIGHT', -xOffset, yOffset )
+end
+
+Functions['SetOutside'] = function( Object, Anchor, xOffset, yOffset )
+	xOffset = xOffset or 2
+	yOffset = yOffset or 2
+	Anchor = Anchor or Object:GetParent()
+
+	if( Object:GetPoint() ) then
+		Object:ClearAllPoints()
+	end
+
+	Object:SetPoint( 'TOPLEFT', Anchor, 'TOPLEFT', -xOffset, yOffset )
+	Object:SetPoint( 'BOTTOMRIGHT', Anchor, 'BOTTOMRIGHT', xOffset, -yOffset )
+end
+
+--------------------------------------------------
+-- UnitFrames: Health
+--------------------------------------------------
+Functions['PostUpdateHealth'] = function( self, Unit, Min, Max )
+	local R, G, B
+
+	local Duration = floor( Min / Max * 100 )
+
+	if( Max ~= 0 ) then
+		R, G, B = oUF.ColorGradient( Min, Max, 1, 0, 0, 1, 1, 0, 1, 1, 1 )
+	end
+
+	if( not UnitIsConnected( Unit ) ) then
+		self['Value']:SetText( '' )
+		self['Percent']:SetText( 'offline' )
+		self['Percent']:SetTextColor( 0.8, 0.8, 0.8 )
+	elseif( UnitIsGhost( Unit ) ) then
+		self['Value']:SetText( '' )
+		self['Percent']:SetText( 'ghost' )
+		self['Percent']:SetTextColor( 0.8, 0.8, 0.8 )
+	elseif( UnitIsDead( Unit ) ) then
+		self['Value']:SetText( '' )
+		self['Percent']:SetText( 'dead' )
+		self['Percent']:SetTextColor( 0.8, 0.8, 0.8 )
+	elseif( Unit == "player" ) then
+		self['Value']:SetText( Min .. '/' .. Max )
+		self['Percent']:SetText( Duration .. '%' )
+		self['Percent']:SetTextColor( R, G, B )
+	elseif( Unit == "target" or Unit == "focus" or self:GetParent():GetName():match"oUF_Party" ) then
+		self['Value']:SetText( Min .. "/" .. Max )
+		self['Percent']:SetText( Duration .. "%" )
+		self['Percent']:SetTextColor( R, G, B )
+	else
+		self['Value']:SetText( '' )
+		self['Percent']:SetText( Duration .. "%" )
+	end
+end
+
+--------------------------------------------------
+-- UnitFrames: Power
+--------------------------------------------------
+Functions['PreUpdatePower'] = function( self, Unit )
+	local PowerType = select( 2, UnitPowerType( Unit ) )
+	local Colors = Config['Colors']['Power'][PowerType]
+
+	if( Colors ) then
+		self:SetStatusBarColor( Colors[1], Colors[2], Colors[3] )
+	end
+end
+
+Functions['PostUpdatePower'] = function( self, Unit, Min, Max )
+	if( not UnitIsPlayer( Unit ) ) then
+		self['Value']:SetText( '' )
+		self['Percent']:SetText( '' )
+	else
+		local PowerType = select( 2, UnitPowerType( Unit ) )
+		local Colors = Config['Colors']['Power'][PowerType]
+
+		self['Value']:SetText( Min .. '/' .. Max )
+		if( PowerType == "MANA" ) then
+			self['Percent']:SetText( floor( Min / Max * 100 ) .. "%" )
+		else
+			self['Percent']:SetText( Min )
+		end
+	end
+end
+
+--------------------------------------------------
+-- Auras
+--------------------------------------------------
 Functions['CreateAuraTimer'] = function( self, elapsed )
 	if( self.TimeLeft ) then
 		self.Elapsed = ( self.Elapsed or 0 ) + elapsed
@@ -171,7 +179,7 @@ Functions['CreateAuraTimer'] = function( self, elapsed )
 			end
 
 			if( self.TimeLeft > 0 ) then
-				local Time = FormatTime( self.TimeLeft )
+				local Time = Functions['FormatTime']( self.TimeLeft )
 				self.Remaining:SetText( Time )
 
 				if( self.TimeLeft <= 5 ) then
@@ -189,11 +197,11 @@ Functions['CreateAuraTimer'] = function( self, elapsed )
 	end
 end
 
-Functions['PostCreateAura'] = function( element, button )
+Functions['PostCreateAura'] = function( element, button, remaining )
 	Functions['ApplyBackdrop']( button )
 
-	button['Remaining'] = Constructors['FontString']( button, 'OVERLAY', Config['Fonts']['Font'], Config['Fonts']['Size'], 'THINOUTLINE', 'CENTER', true )
-	button['Remaining']:SetPoint( 'TOPLEFT', button, 'TOPLEFT', 0, 0 )
+	button['Remaining'] = Config['FontString']( button, 'OVERLAY', Config['Fonts']['Font'], element:GetHeight() / 2, 'THINOUTLINE', 'CENTER', true )
+	button['Remaining']:SetPoint( 'CENTER', button, 'CENTER', 0, 0 )
 
 	button['cd'].noOCC = true
 	button['cd'].noCooldownCount = true
@@ -207,7 +215,7 @@ Functions['PostCreateAura'] = function( element, button )
 	button['icon']:SetTexCoord( 0.08, 0.92, 0.08, 0.92 )
 	button['icon']:SetDrawLayer( 'ARTWORK' )
 
-	button['count']:SetPoint( 'BOTTOMRIGHT', button, 'BOTTOMRIGHT', 0, 0 )
+	button['count']:SetPoint( 'BOTTOMRIGHT', button, 'BOTTOMRIGHT', 4, 0 )
 	button['count']:SetJustifyH( 'RIGHT' )
 	button['count']:SetFont( Config['Fonts']['Font'], Config['Fonts']['Size'], 'THINOUTLINE' )
 	button['count']:SetTextColor( 0.8, 0.8, 0.7 )
