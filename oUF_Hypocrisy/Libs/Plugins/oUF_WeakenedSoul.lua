@@ -1,5 +1,5 @@
-local AddOn, Plugin = ...
-local oUF = Plugin.oUF
+local _, ns = ...
+local oUF = ns.oUF or oUF
 
 local GetDebuffInfo = function( unit )
 	if( not UnitCanAssist( 'player', unit ) ) then
@@ -47,7 +47,7 @@ local Update = function( self, event, unit )
 		local _, _, _, _, _, duration, expirationTime = UnitDebuff( unit, GetSpellInfo( 6788 ) )
 
 		ws.dur = duration
-		ws.exp = expirationTime		
+		ws.exp = expirationTime
 		ws:Show()
 		ws:SetScript( "OnUpdate", UpdateBar )
 	else

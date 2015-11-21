@@ -4,7 +4,7 @@ local oUF = NameSpace['oUF'] or oUF
 local Config = NameSpace['Config']
 local Functions = NameSpace['Functions']
 
-if( not Config['Units']['Target']['Enable'] ) then
+if( not Config['Units']['Focus']['Enable'] ) then
 	return
 end
 
@@ -20,7 +20,7 @@ local ApplyStyle = function( self )
 
 	self:SetSize( self['Config']['Width'], self['Config']['Height'] )
 	self:SetScale( Config['Scale'] )
-	self:SetPoint( 'TOPLEFT', oUF_Player, 'TOPRIGHT', 5, 0 )
+	self:SetPoint( 'TOPLEFT', UIParent, 'CENTER', 284, -200 )
 
 	self:SetFrameStrata( 'BACKGROUND' )
 	self:SetFrameLevel( 1 )
@@ -34,7 +34,7 @@ local ApplyStyle = function( self )
 	--------------------------------------------------
 	-- Power
 	--------------------------------------------------
-	self['Power'] = Config['StatusBar']( self:GetName() .. '_PowerBar', self )
+	self['Power'] = Config['StatusBar']( '$parent_PowerBar', self )
 	self['Power']:SetPoint( 'BOTTOMRIGHT', self, 'BOTTOMRIGHT', 0, 0 )
 	self['Power']:SetSize( 137, 9 )
 
@@ -64,7 +64,7 @@ local ApplyStyle = function( self )
 	--------------------------------------------------
 	-- Health
 	--------------------------------------------------
-	self['Health'] = Config['StatusBar']( self:GetName() .. '_HealthBar', self )
+	self['Health'] = Config['StatusBar']( '$parent_HealthBar', self )
 	self['Health']:SetPoint( 'BOTTOM', self['Power'], 'TOP', 0, 2 )
 	self['Health']:SetSize( 137, 15 )
 
@@ -93,7 +93,7 @@ local ApplyStyle = function( self )
 	--------------------------------------------------
 	-- Title
 	--------------------------------------------------
-	self['Title'] = CreateFrame( 'Frame', self:GetName() .. '_TitleBar', self )
+	self['Title'] = CreateFrame( 'Frame', '$parent_TitleBar', self )
 	self['Title']:SetPoint( 'BOTTOM', self['Health'], 'TOP', 0, 2 )
 	self['Title']:SetSize( 137, 12 )
 
@@ -120,7 +120,7 @@ local ApplyStyle = function( self )
 	--------------------------------------------------
 	-- Portrait
 	--------------------------------------------------
-	self['Portrait'] = CreateFrame( 'PlayerModel', self:GetName() .. '_Portrait', self )
+	self['Portrait'] = CreateFrame( 'PlayerModel', '$parent_Portrait', self )
 	self['Portrait']:SetPoint( 'BOTTOMRIGHT', self['Power'], 'BOTTOMLEFT', -2, 1 )
 	self['Portrait']:SetSize( 43, 39 )
 
@@ -128,7 +128,7 @@ local ApplyStyle = function( self )
 	-- CastBar
 	--------------------------------------------------
 	if( self['Config']['CastBar'] ) then
-		self['Castbar'] = Config['StatusBar']( self:GetName() .. '_CastBar', self, nil, { 0.4, 0.6, 0.8 } )
+		self['Castbar'] = Config['StatusBar']( '$parent_CastBar', self, nil, { 0.4, 0.6, 0.8 } )
 		self['Castbar']:SetPoint( 'LEFT', self:GetName() .. '_TitleBar', 'LEFT', 0, 0 )
 		self['Castbar']:SetSize( self['Title']:GetWidth(), self['Title']:GetHeight() )
 
@@ -162,46 +162,8 @@ local ApplyStyle = function( self )
 			Functions['SetInside']( self['Castbar']['Icon'], 0, 0 )
 		end
 	end
-
-	--------------------------------------------------
-	-- Buffs
-	--------------------------------------------------
-	if( self['Config']['Buffs'] ) then
-		self['Buffs'] = CreateFrame( 'Frame', self:GetName() .. '_Buffs', self )
-		self['Buffs']:SetPoint( 'TOPLEFT', self, 'BOTTOMLEFT', 0, -5 )
-		self['Buffs']:SetHeight( 18.5 )
-		self['Buffs']:SetWidth( 185 )
-
-		self['Buffs']['initialAnchor'] = 'TOPLEFT'
-		self['Buffs']['growth-y'] = 'DOWN'
-		self['Buffs']['size'] = 18
-		self['Buffs']['num'] = 36
-		self['Buffs']['spacing'] = 5
-
-		self['Buffs']['PostCreateIcon'] = Functions['PostCreateAura']
-		self['Buffs']['PostUpdateIcon'] = Functions['PostUpdateAura']
-	end
-
-	--------------------------------------------------
-	-- Debuffs
-	--------------------------------------------------
-	if( self['Config']['Debuffs'] ) then
-		self['Debuffs'] = CreateFrame( 'Frame', self:GetName() .. '_Debuffs', self )
-		self['Debuffs']:SetPoint( 'BOTTOMLEFT', self, 'TOPLEFT', 0, 5 )
-		self['Debuffs']:SetHeight( 29 )
-		self['Debuffs']:SetWidth( 232 )
-
-		self['Debuffs']['size'] = 26
-		self['Debuffs']['initialAnchor'] = 'BOTTOMLEFT'
-		self['Debuffs']['growth-y'] = 'TOP'
-		self['Debuffs']['num'] = 6
-		self['Debuffs']['spacing'] = 5
-
-		self['Debuffs']['PostCreateIcon'] = Functions['PostCreateAura']
-		self['Debuffs']['PostUpdateIcon'] = Functions['PostUpdateAura']
-	end
 end
 
-oUF:RegisterStyle( 'hypocrisy:target', ApplyStyle )
-oUF:SetActiveStyle( 'hypocrisy:target' )
-oUF:Spawn( 'target', 'oUF_Target' )
+oUF:RegisterStyle( 'hypocrisy:focus', ApplyStyle )
+oUF:SetActiveStyle( 'hypocrisy:focus' )
+oUF:Spawn( 'focus', 'oUF_Focus' )

@@ -120,17 +120,17 @@ Functions['PostUpdateHealth'] = function( self, Unit, Min, Max )
 		self['Value']:SetText( '' )
 		self['Percent']:SetText( 'dead' )
 		self['Percent']:SetTextColor( 0.8, 0.8, 0.8 )
-	elseif( Unit == "player" ) then
+	elseif( Unit == 'player' ) then
 		self['Value']:SetText( Min .. '/' .. Max )
 		self['Percent']:SetText( Duration .. '%' )
 		self['Percent']:SetTextColor( R, G, B )
-	elseif( Unit == "target" or Unit == "focus" or self:GetParent():GetName():match"oUF_Party" ) then
-		self['Value']:SetText( Min .. "/" .. Max )
-		self['Percent']:SetText( Duration .. "%" )
+	elseif( Unit == 'target' or Unit == 'focus' or self:GetParent():GetName():match'oUF_Party' ) then
+		self['Value']:SetText( Min .. '/' .. Max )
+		self['Percent']:SetText( Duration .. '%' )
 		self['Percent']:SetTextColor( R, G, B )
 	else
 		self['Value']:SetText( '' )
-		self['Percent']:SetText( Duration .. "%" )
+		self['Percent']:SetText( Duration .. '%' )
 	end
 end
 
@@ -155,13 +155,121 @@ Functions['PostUpdatePower'] = function( self, Unit, Min, Max )
 		local Colors = Config['Colors']['Power'][PowerType]
 
 		self['Value']:SetText( Min .. '/' .. Max )
-		if( PowerType == "MANA" ) then
-			self['Percent']:SetText( floor( Min / Max * 100 ) .. "%" )
+		if( PowerType == 'MANA' ) then
+			self['Percent']:SetText( floor( Min / Max * 100 ) .. '%' )
 		else
 			self['Percent']:SetText( Min )
 		end
 	end
 end
+
+--------------------------------------------------
+-- UnitFrames: CastBars
+--------------------------------------------------
+Functions['CastBars_CustomCastTimeText'] = function( self, Duration )
+	local Value = format( '%.1f / %.1f', self.channeling and Duration or self.max - Duration, self.max )
+
+	self['Time']:SetText( Value )
+end
+
+Functions['CastBars_CustomCastDelayText'] = function( self, Duration )
+	local Value = format( '%.1f |cffaf5050%s %.1f|r', self.channeling and Duration or self.max - Duration, self.channeling and '- ' or '+', self.delay )
+
+	self['Time']:SetText( Value )
+end
+
+Functions['CastBars_PostCastStart'] = function( self, Unit, Name, Rank, CastID )
+	if( Unit == 'vehicle' ) then
+		Unit = 'player'
+	end
+
+	if( Name == 'Opening' and self['Text'] ) then
+		self['Text']:SetText( 'Opening' )
+	elseif( self['Text'] ) then
+		if( Unit ~= 'player' ) then
+			self['Text']:SetText( Functions['ShortenString']( Name, 20, true ) )
+		else
+			self['Text']:SetText( Functions['ShortenString']( Name, 20, true ) )
+		end
+	end
+
+	if( self['interrupt'] and Unit ~= 'player' ) then
+		if( UnitCanAttack( 'player', Unit ) ) then
+			self:SetStatusBarColor( 1, 0, 0, 1 )
+		else
+			self:SetStatusBarColor( 1, 0, 0, 1 )
+		end
+	else
+		self:SetStatusBarColor( 0.4, 0.6, 0.8, 1 )
+	end
+end
+
+--------------------------------------------------
+-- UnitFrames: Threat Border
+--------------------------------------------------
+Functions['UpdateThreat'] = function( self, event, unit )
+	if( self.unit ~= unit ) then
+		return
+	end
+
+	local Threat = UnitThreatSituation( self.unit )
+	local R, G, B
+
+	if( Threat and Threat > 1 ) then
+		R, G, B = GetThreatStatusColor( Threat )
+		self:SetBackdropColor( R, G, B, 1 )
+	else
+		self:SetBackdropColor( 0, 0, 0, 1 )
+	end
+end
+
+--------------------------------------------------
+-- UnitFrames: ClassBars - Priest
+--------------------------------------------------
+Functions['ClassBars_Priest'] = function( self )
+	local Frame = self:GetParent()
+	local Serendipity = Frame.SerendipityBar
+	local Totems = Frame.Totems
+	local Shadow = Frame.Shadow
+
+	if (Serendipity and Serendipity:IsShown()) and (Totems and Totems:IsShown()) then
+		Serendipity:ClearAllPoints()
+		Serendipity:SetPoint("BOTTOM", Frame, "TOP", 0, 15)
+	elseif (Serendipity and Serendipity:IsShown()) or (Totems and Totems:IsShown()) then
+		Serendipity:ClearAllPoints()
+		Serendipity:SetPoint("BOTTOMLEFT", Frame, "TOPLEFT", 0, 5)
+	end
+end
+
+--------------------------------------------------
+-- UnitFrames: ClassBars - Druid
+--------------------------------------------------
+Functions['ClassBars_Druid'] = function( self )
+	local Frame = self:GetParent()
+	local EclipseBar = Frame['EclipseBar']
+	local Totems = Frame['Totems']
+	local Specialization = GetSpecialization()
+
+	if( Specialization == 1 ) then
+		Totems[1]:SetWidth( Totems[1].OriginalWidth )
+		Totems[2]:Show()
+		Totems[3]:Show()
+	elseif( Specialization == 4 ) then
+		Totems[1]:SetWidth( 182 )
+		Totems[2]:Hide()
+		Totems[3]:Hide()
+	end
+
+	if( EclipseBar and EclipseBar:IsShown() ) and ( Totems and Totems:IsShown() ) then
+		Totems:ClearAllPoints()
+		Totems:SetPoint( 'BOTTOM', Frame, 'TOP', 0, 15 )
+	elseif( EclipseBar and EclipseBar:IsShown() ) or ( Totems and Totems:IsShown() ) then
+		Totems:ClearAllPoints()
+		Totems:SetPoint( 'BOTTOM', Frame, 'TOP', 0, 5 )
+	end
+end
+
+
 
 --------------------------------------------------
 -- Auras
@@ -267,5 +375,82 @@ Functions['PostUpdateAura'] = function( icons, unit, button, index, offset, filt
 		button['TimeLeft'] = ExpirationTime
 		button['First'] = true
 		button:SetScript( 'OnUpdate', Functions['CreateAuraTimer'] )
+	end
+end
+
+--------------------------------------------------
+-- Totems
+--------------------------------------------------
+local hasbit = function( x, p )
+	return x % ( p + p ) >= p
+end
+
+local setbit = function( x, p )
+	return hasbit( x, p ) and x or x + p
+end
+
+local clearbit = function( x, p )
+	return hasbit( x, p ) and x - p or x
+end
+
+Functions['Totems_UpdateTimers'] = function( self, elapsed )
+	self.TimeLeft = self.TimeLeft - elapsed
+
+	if( self.TimeLeft > 0 ) then
+		self:SetValue( self.TimeLeft )
+	else
+		self:SetValue( 0 )
+		self:SetScript( 'OnUpdate', nil )
+	end
+end
+
+Functions['Totems_Override'] = function( self, event, slot )
+	local Bar = self.Totems
+	local Priorities = Bar.__map
+
+	if( Bar.PreUpdate ) then
+		Bar:PreUpdate( Priorities[slot] )
+	end
+
+	local Totem = Bar[Priorities[slot]]
+	local HaveTotem, Name, Start, Duration, Icon = GetTotemInfo( slot )
+	local Colors = Config['Colors']['Totems']
+
+	if( not Colors[slot] ) then
+		return
+	end
+
+	local R, G, B = unpack( Colors[slot] )
+
+	if( HaveTotem ) then
+		Totem.TimeLeft = ( Start + Duration ) - GetTime()
+		Totem:SetMinMaxValues( 0, Duration )
+		Totem:SetScript( 'OnUpdate', Functions['Totems_UpdateTimers'] )
+		Totem:SetStatusBarColor( R, G, B )
+
+		Bar.activeTotems = setbit( Bar.activeTotems, 2 ^ ( slot - 1 ) )
+	else
+		Totem:SetValue( 0 )
+		Totem:SetScript( 'OnUpdate', nil )
+
+		Bar.activeTotems = clearbit( Bar.activeTotems, 2 ^ ( slot - 1 ) )
+	end
+
+	if( Totem.bg ) then
+		local Multiplier = Totem.bg.multiplier or 0.3
+
+		R, G, B = R * Multiplier, G * Multiplier, B * Multiplier
+
+		Totem.bg:SetVertexColor( R, G, B )
+	end
+
+	if( Bar.activeTotems > 0 ) then
+		Bar:Show()
+	else
+		Bar:Hide()
+	end
+
+	if( Bar.PostUpdate ) then
+		return Bar:PostUpdate( Priorities[slot], HaveTotem, Name, Start, Duration, Icon )
 	end
 end

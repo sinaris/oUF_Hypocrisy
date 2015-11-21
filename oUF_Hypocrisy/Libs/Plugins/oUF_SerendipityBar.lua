@@ -1,6 +1,6 @@
-local _, Class = UnitClass( "player" )
+local _, Class = UnitClass( 'player' )
 
-if( Class ~= "ROGUE" ) then
+if( Class ~= 'PRIEST' ) then
 	return
 end
 
@@ -8,11 +8,11 @@ local AddOn, Plugin = ...
 local oUF = Plugin.oUF
 
 local Colors = {
-	[1] = { 1, 1, 0.74, 1 },
-	[2] = { 1, 1, 0.74, 1 },
+	[1] = { 1.0, 1.0, 0.74, 1 },
+	[2] = { 1.0, 1.0, 0.74, 1 },
 }
 
-local function Update( self, event, unit )
+local Update = function( self, event, unit )
 	local Bar = self.SerendipityBar
 	local Serendipity = IsSpellKnown( 63733 )
 
@@ -47,15 +47,15 @@ local function Update( self, event, unit )
 	end
 end
 
-local function Path( self, ... )
+local Path = function( self, ... )
 	return ( self.SerendipityBar.Override or Update ) ( self, ... )
 end
 
-local function ForceUpdate( element )
+local ForceUpdate = function( element )
 	return Path( element.__owner, 'ForceUpdate', element.__owner.unit )
 end
 
-local function Enable( self )
+local Enable = function( self )
 	local Bar = self.SerendipityBar
 
 	if( Bar ) then
@@ -74,14 +74,6 @@ local function Enable( self )
 			Point:SetStatusBarColor( unpack( Colors[i] ) )
 			Point:SetFrameLevel( Bar:GetFrameLevel() + 1 )
 			Point:GetStatusBarTexture():SetHorizTile( false )
-
-			if( Point.bg ) then
-				Point:SetMinMaxValues( 0, 1 )
-				Point:SetValue( 0 )
-				Point.bg:SetAlpha( 0.2 )
-				Point.bg:SetAllPoints()
-				Point.bg:SetTexture( unpack( Colors ) )
-			end
 		end
 
 		Bar:Hide()
@@ -90,7 +82,7 @@ local function Enable( self )
 	end
 end
 
-local function Disable( self )
+local Disable = function( self )
 	local Bar = self.SerendipityBar
 
 	if( Bar ) then

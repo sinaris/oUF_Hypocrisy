@@ -6,8 +6,12 @@
 
 Libs\oUF\oUF.xml
 
+Libs\Plugins\oUF_SerendipityBar.lua
+Libs\Plugins\oUF_ShadowOrbsBar.lua
 Libs\Plugins\oUF_Smooth.lua
 Libs\Plugins\oUF_Swing.lua
+Libs\Plugins\TotemBar.lua
+Libs\Plugins\oUF_WeakenedSoul.lua
 
 Core\Config.lua
 Core\Functions.lua
@@ -15,3 +19,14 @@ Core\Tags.lua
 
 Units\Player.lua
 Units\Target.lua
+Units\TargetOfTarget.lua
+Units\Pet.lua
+Units\PetTarget.lua
+Units\Focus.lua
+Units\FocusTarget.lua
+
+Groups\Arena.lua
+Groups\Boss.lua
+Groups\Party.lua
+Groups\Raid.lua
+Groups\Tanks.lua

@@ -25,6 +25,13 @@ Config['Colors'] = {
 		['HOLY_POWER'] = { 0.95, 0.90, 0.60 },
 		['FUEL'] = { 0, 0.55, 0.5 },
 	},
+
+	['Totems'] = {
+		[1] = { 0.58, 0.23, 0.10 },
+		[2] = { 0.23, 0.45, 0.13 },
+		[3] = { 0.19, 0.48, 0.60 },
+		[4] = { 0.42, 0.18, 0.74 },
+	}
 }
 
 Config['Textures'] = {
@@ -78,14 +85,61 @@ end
 
 Config['Units'] = {
 	['Player'] = {
+		['Enable'] = true,
 		['Height'] = 44,
 		['Width'] = 182,
+
+		['CastBar'] = {
+			['Enable'] = true,
+			['Fixed'] = false,
+			['Height'] = 25,
+			['Width'] = 370,
+			['SafeZone'] = true,
+			['Icons'] = true,
+		},
 
 		['SwingTimer'] = true,
 	},
 
 	['Target'] = {
+		['Enable'] = true,
 		['Height'] = 40,
 		['Width'] = 182,
-	}
+
+		['Buffs'] = true,
+		['Debuffs'] = true,
+
+		['CastBar'] = {
+			['Enable'] = true,
+			['Icons'] = true,
+		},
+	},
+
+	['Focus'] = {
+		['Enable'] = true,
+		['Height'] = 40,
+		['Width'] = 182,
+
+		['CastBar'] = {
+			['Enable'] = true,
+		},
+	},
+
+	['Party'] = {
+		['Enable'] = true,
+		['Height'] = 40,
+		['Width'] = 182,
+
+		['Buffs'] = true,
+
+		['CastBar'] = {
+			['Enable'] = true,
+			['Icons'] = true,
+		},
+
+		['HealPredictionBar_MyBar'] = true,
+		['Indicators'] = true,
+		['ThreatBorder'] = true,
+		['Range'] = true,
+	},
 }

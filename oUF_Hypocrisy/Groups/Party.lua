@@ -4,7 +4,7 @@ local oUF = NameSpace['oUF'] or oUF
 local Config = NameSpace['Config']
 local Functions = NameSpace['Functions']
 
-if( not Config['Units']['Target']['Enable'] ) then
+if( not Config['Units']['Party']['Enable'] ) then
 	return
 end
 
@@ -12,15 +12,11 @@ local ApplyStyle = function( self )
 	--------------------------------------------------
 	-- Defaults
 	--------------------------------------------------
-	self['Config'] = Config['Units']['Target']
+	self['Config'] = Config['Units']['Party']
 
 	self:RegisterForClicks( 'AnyUp' )
 	self:SetScript( 'OnEnter', UnitFrame_OnEnter )
 	self:SetScript( 'OnLeave', UnitFrame_OnLeave )
-
-	self:SetSize( self['Config']['Width'], self['Config']['Height'] )
-	self:SetScale( Config['Scale'] )
-	self:SetPoint( 'TOPLEFT', oUF_Player, 'TOPRIGHT', 5, 0 )
 
 	self:SetFrameStrata( 'BACKGROUND' )
 	self:SetFrameLevel( 1 )
@@ -44,11 +40,11 @@ local ApplyStyle = function( self )
 	self['Power']['bg']:SetAlpha( 0.30 )
 
 	self['Power']['Value'] = Config['FontString']( self['Power'], 'OVERLAY', Config['Fonts']['Font'], Config['Fonts']['Size'] - 1, nil, 'CENTER', true )
-	self['Power']['Value']:SetPoint( 'LEFT', self['Power'], 'LEFT', 2, 1 )
+	self['Power']['Value']:SetPoint( 'LEFT', self['Power'], 'LEFT', 2, 0 )
 	self['Power']['Value']:SetTextColor( 1, 1, 1 )
 
 	self['Power']['Percent'] = Config['FontString']( self['Power'], 'OVERLAY', Config['Fonts']['Font'], Config['Fonts']['Size'] - 1, nil, 'CENTER', true )
-	self['Power']['Percent']:SetPoint( 'RIGHT', self['Power'], 'RIGHT', -2, 1 )
+	self['Power']['Percent']:SetPoint( 'RIGHT', self['Power'], 'RIGHT', -2, 0 )
 	self['Power']['Percent']:SetTextColor( 1, 1, 1 )
 
 	self['Power']['frequentUpdates'] = true
@@ -183,25 +179,111 @@ local ApplyStyle = function( self )
 	end
 
 	--------------------------------------------------
-	-- Debuffs
+	-- HealPredictionBar
 	--------------------------------------------------
-	if( self['Config']['Debuffs'] ) then
-		self['Debuffs'] = CreateFrame( 'Frame', self:GetName() .. '_Debuffs', self )
-		self['Debuffs']:SetPoint( 'BOTTOMLEFT', self, 'TOPLEFT', 0, 5 )
-		self['Debuffs']:SetHeight( 29 )
-		self['Debuffs']:SetWidth( 232 )
+	if( self['Config']['HealPredictionBar_MyBar'] ) then
+		local MyBar = Config['StatusBar']( self:GetName() .. '_HealPredictionBar_MyBar', self['Health'] )
+		MyBar:SetPoint( 'TOPLEFT', self['Health']:GetStatusBarTexture(), 'TOPRIGHT', 0, 0 )
+		MyBar:SetPoint( 'BOTTOMLEFT', self['Health']:GetStatusBarTexture(), 'BOTTOMRIGHT', 0, 0 )
+		MyBar:SetWidth( 137 )
+		MyBar:SetStatusBarColor( 0, 0.3, 0.15, 1 )
 
-		self['Debuffs']['size'] = 26
-		self['Debuffs']['initialAnchor'] = 'BOTTOMLEFT'
-		self['Debuffs']['growth-y'] = 'TOP'
-		self['Debuffs']['num'] = 6
-		self['Debuffs']['spacing'] = 5
+		local OtherBar = Config['StatusBar']( self:GetName() .. '_HealPredictionBar_OtherBar', self['Health'] )
+		OtherBar:SetPoint( 'TOPLEFT', self['Health']:GetStatusBarTexture(), 'TOPRIGHT', 0, 0 )
+		OtherBar:SetPoint( 'BOTTOMLEFT', self['Health']:GetStatusBarTexture(), 'BOTTOMRIGHT', 0, 0 )
+		OtherBar:SetWidth( 137 )
+		OtherBar:SetStatusBarColor( 0, 0.3, 0, 1 )
 
-		self['Debuffs']['PostCreateIcon'] = Functions['PostCreateAura']
-		self['Debuffs']['PostUpdateIcon'] = Functions['PostUpdateAura']
+		local AbsorbBar = Config['StatusBar']( self:GetName() .. '_HealPredictionBar_AbsorbBar', self['Health'] )
+		AbsorbBar:SetPoint( 'TOPLEFT', self['Health']:GetStatusBarTexture(), 'TOPRIGHT', 0, 0 )
+		AbsorbBar:SetPoint( 'BOTTOMLEFT', self['Health']:GetStatusBarTexture(), 'BOTTOMRIGHT', 0, 0 )
+		AbsorbBar:SetWidth( 137 )
+		AbsorbBar:SetStatusBarColor( 0.3, 0.3, 0, 1 )
+
+		local HealAbsorbBar = Config['StatusBar']( self:GetName() .. '_HealPredictionBar_HealAbsorbBar', self['Health'] )
+		HealAbsorbBar:SetPoint( 'TOPLEFT', self['Health']:GetStatusBarTexture(), 'TOPRIGHT', 0, 0 )
+		HealAbsorbBar:SetPoint( 'BOTTOMLEFT', self['Health']:GetStatusBarTexture(), 'BOTTOMRIGHT', 0, 0 )
+		HealAbsorbBar:SetWidth( 137 )
+
+		self['HealPrediction'] = {
+			myBar = MyBar,
+			otherBar = OtherBar,
+			absorbBar = AbsorbBar,
+			healAbsorbBar = HealAbsorbBar,
+			maxOverflow = 1,
+			frequentUpdates = true,
+		}
 	end
+
+	--------------------------------------------------
+	-- Indicators
+	--------------------------------------------------
+	if( self['Config']['Indicators'] ) then
+		self['Leader'] = self['RaisedFrame']:CreateTexture( nil, 'OVERLAY' )
+		self['Leader']:SetPoint( 'CENTER', self['Title'], 'CENTER', 0, 4 )
+		self['Leader']:SetSize( 12, 12 )
+
+		self['Assistant'] = self.Health:CreateTexture( nil, 'OVERLAY' )
+		self['Assistant']:SetPoint( 'CENTER', self['Title'], 'CENTER', 14, 5 )
+		self['Assistant']:SetSize( 12, 12 )
+
+		self['MasterLooter'] = self['RaisedFrame']:CreateTexture( nil, 'OVERLAY' )
+		self['MasterLooter']:SetPoint( 'CENTER', self['Title'], 'CENTER', -14, 5 )
+		self['MasterLooter']:SetSize( 12, 12 )
+
+		self['LFDRole'] = self['RaisedFrame']:CreateTexture( nil, 'OVERLAY' )
+		self['LFDRole']:SetPoint( 'BOTTOMLEFT', self['RaisedFrame'], 'BOTTOMLEFT', 2, 2 )
+		self['LFDRole']:SetSize( 12, 12 )
+
+		self['RaidIcon'] = self['RaisedFrame']:CreateTexture( nil, 'OVERLAY' )
+		self['RaidIcon']:SetPoint( 'TOP', self['Title'], 'CENTER', 0, 10 )
+		self['RaidIcon']:SetSize( 18, 18 )
+
+		self['ReadyCheck'] = self['RaisedFrame']:CreateTexture( nil, 'OVERLAY' )
+		self['ReadyCheck']:SetPoint( 'BOTTOMLEFT', self, 'BOTTOMLEFT', 10, 2 )
+		self['ReadyCheck']:SetSize( 18, 18 )
+	end
+
+	--------------------------------------------------
+	-- Threat
+	--------------------------------------------------
+	if( self['Config']['ThreatBorder'] ) then
+		table.insert( self.__elements, Functions['UpdateThreat'] )
+		self:RegisterEvent( 'PLAYER_TARGET_CHANGED', Functions['UpdateThreat'] )
+		self:RegisterEvent( 'UNIT_THREAT_LIST_UPDATE', Functions['UpdateThreat'] )
+		self:RegisterEvent( 'UNIT_THREAT_SITUATION_UPDATE', Functions['UpdateThreat'] )
+	end
+
+	--------------------------------------------------
+	-- Range
+	--------------------------------------------------
+	if( self['Config']['Range'] ) then
+		local Range = {
+			insideAlpha = 1.0,
+			outsideAlpha = 0.5,
+		}
+
+		self['Range'] = Range
+	end
+
 end
 
-oUF:RegisterStyle( 'hypocrisy:target', ApplyStyle )
-oUF:SetActiveStyle( 'hypocrisy:target' )
-oUF:Spawn( 'target', 'oUF_Target' )
+oUF:RegisterStyle( 'hypocrisy:party', ApplyStyle )
+oUF:SetActiveStyle( 'hypocrisy:party' )
+local PartyFrames = oUF:SpawnHeader( 'PartyFrames', nil, 'custom [@raid6,exists] hide;show',
+	'oUF-initialConfigFunction', ( [[
+		self:SetWidth(%d)
+		self:SetHeight(%d)
+	]] ):format( 182, 40 ),
+	'showPlayer', true,
+	'showSolo', false,
+	'showParty', true,
+	'showRaid', false,
+	'yOffset', -50,
+	'point', 'TOP',
+	'groupingOrder', 'TANK,HEALER,DAMAGER,NONE',
+	'groupBy', 'ASSIGNEDROLE',
+	'sortMethod', 'NAME'
+)
+PartyFrames:ClearAllPoints()
+PartyFrames:SetPoint( 'TOPLEFT', UIParent, 'TOPLEFT', 15, -40)
